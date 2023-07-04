@@ -53,14 +53,17 @@ class FileApiInterfaceImpl extends FileApiInterface {
       //       .toList(),
       // }..addAll(request.toJson()));
       var formData = FormData.fromMap({
-        'file': await MultipartFile.fromFile(request.files[0].path, filename: request.files[0].path.split('/').last),
+        'file': await MultipartFile.fromFile(request.files[0].path,
+            filename: request.files[0].path.split('/').last),
       }..addAll(request.toJson()));
 
-      final data = await httpApiClient()
-          .post('$FILE_V3/', data: formData, onSendProgress: onUploadProgress, cancelToken: cancelToken);
+      final data = await httpApiClient().post('$FILE_V3/',
+          data: formData,
+          onSendProgress: onUploadProgress,
+          cancelToken: cancelToken);
       return fileResponseFromList(data.data);
     } on DioError catch (error) {
-      return Future.error(error.toAmityExcetion());
+      return Future.error(error.toAmityException());
     }
   }
 
@@ -84,15 +87,18 @@ class FileApiInterfaceImpl extends FileApiInterface {
       // }..addAll(request.toJson()));
 
       var formData = FormData.fromMap({
-        'files': await MultipartFile.fromFile(request.files[0].path, filename: request.files[0].path.split('/').last),
+        'files': await MultipartFile.fromFile(request.files[0].path,
+            filename: request.files[0].path.split('/').last),
       }..addAll(request.toJson()));
 
-      final data = await httpApiClient()
-          .post('$IMAGE_FILE_V4/', data: formData, onSendProgress: onUploadProgress, cancelToken: cancelToken);
+      final data = await httpApiClient().post('$IMAGE_FILE_V4/',
+          data: formData,
+          onSendProgress: onUploadProgress,
+          cancelToken: cancelToken);
 
       return fileResponseFromList(data.data);
     } on DioError catch (error) {
-      return Future.error(error.toAmityExcetion());
+      return Future.error(error.toAmityException());
     }
   }
 
@@ -114,15 +120,18 @@ class FileApiInterfaceImpl extends FileApiInterface {
 
       // Upload single file
       var formData = FormData.fromMap({
-        'files': await MultipartFile.fromFile(request.files[0].path, filename: request.files[0].path.split('/').last),
+        'files': await MultipartFile.fromFile(request.files[0].path,
+            filename: request.files[0].path.split('/').last),
       }..addAll(request.toJson()));
 
-      final data = await httpApiClient()
-          .post('$VIDEO_FILE_V4/', data: formData, onSendProgress: onUploadProgress, cancelToken: cancelToken);
+      final data = await httpApiClient().post('$VIDEO_FILE_V4/',
+          data: formData,
+          onSendProgress: onUploadProgress,
+          cancelToken: cancelToken);
 
       return fileResponseFromList(data.data);
     } on DioError catch (error) {
-      return Future.error(error.toAmityExcetion());
+      return Future.error(error.toAmityException());
     }
   }
 

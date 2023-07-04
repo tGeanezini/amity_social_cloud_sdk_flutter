@@ -19,7 +19,8 @@ class FileRepoImpl extends FileRepo {
 
   @override
   Future<AmityFileProperties> getFileByIdFromDb(String fileId) {
-    return Future.value(fileDbAdapter.getFileEntity(fileId)?.convertToAmityFileProperties());
+    return Future.value(
+        fileDbAdapter.getFileEntity(fileId)?.convertToAmityFileProperties());
   }
 
   @override
@@ -33,17 +34,21 @@ class FileRepoImpl extends FileRepo {
     return AmityUploadComplete(AmityFile(fileProperties.first));
   }
 
-  Future<List<AmityFileProperties>> _saveDataToDb(List<FileResponse> data) async {
+  Future<List<AmityFileProperties>> _saveDataToDb(
+      List<FileResponse> data) async {
     //Convert to File Hive Entity
     //we have save the file first, since every object depends on file
-    List<FileHiveEntity> fileHiveEntities = data.map((e) => e.convertToFileHiveEntity()).toList();
+    List<FileHiveEntity> fileHiveEntities =
+        data.map((e) => e.convertToFileHiveEntity()).toList();
 
     //Save the File Entity
     for (var e in fileHiveEntities) {
       await fileDbAdapter.saveFileEntity(e);
     }
 
-    return fileHiveEntities.map((e) => e.convertToAmityFileProperties()).toList();
+    return fileHiveEntities
+        .map((e) => e.convertToAmityFileProperties())
+        .toList();
   }
 
   @override
@@ -80,7 +85,8 @@ class FileRepoImpl extends FileRepo {
   }
 
   @override
-  StreamController<AmityUploadResult<AmityFile>> uploadFileStream(UploadFileRequest request) {
+  StreamController<AmityUploadResult<AmityFile>> uploadFileStream(
+      UploadFileRequest request) {
     final controller = StreamController<AmityUploadResult<AmityFile>>();
     final cancelToken = CancelToken();
 
@@ -88,9 +94,12 @@ class FileRepoImpl extends FileRepo {
       fileApiInterface.uploadFile(
         request,
         onUploadProgress: (int progress, int total) {
-          final amityUploadInfo =
-              AmityUploadInfo({'progress': ((progress / total) * 100).toInt(), 'contentLength': total});
-          controller.add(AmityUploadResult.progress(amityUploadInfo, cancelToken));
+          final amityUploadInfo = AmityUploadInfo({
+            'progress': ((progress / total) * 100).toInt(),
+            'contentLength': total
+          });
+          controller
+              .add(AmityUploadResult.progress(amityUploadInfo, cancelToken));
         },
         cancelToken: cancelToken,
       ).then((value) async {
@@ -100,7 +109,8 @@ class FileRepoImpl extends FileRepo {
           return;
         }
         final fileProperties = await _saveDataToDb(value);
-        controller.add(AmityUploadResult<AmityFile>.complete(AmityFile(fileProperties.first)));
+        controller.add(AmityUploadResult<AmityFile>.complete(
+            AmityFile(fileProperties.first)));
       }).onError<AmityException>((error, stackTrace) {
         if (error.code == 499) {
           controller.add(AmityUploadResult.cancel());
@@ -109,14 +119,15 @@ class FileRepoImpl extends FileRepo {
         }
       });
     } on DioError catch (error) {
-      controller.add(AmityUploadResult.error(error.toAmityExcetion()));
+      controller.add(AmityUploadResult.error(error.toAmityException()));
     }
 
     return controller;
   }
 
   @override
-  StreamController<AmityUploadResult<AmityImage>> uploadImageStream(UploadFileRequest request) {
+  StreamController<AmityUploadResult<AmityImage>> uploadImageStream(
+      UploadFileRequest request) {
     final controller = StreamController<AmityUploadResult<AmityImage>>();
     final cancelToken = CancelToken();
 
@@ -124,9 +135,12 @@ class FileRepoImpl extends FileRepo {
       fileApiInterface.uploadImage(
         request,
         onUploadProgress: (int progress, int total) {
-          final amityUploadInfo =
-              AmityUploadInfo({'progress': ((progress / total) * 100).toInt(), 'contentLength': total});
-          controller.add(AmityUploadResult.progress(amityUploadInfo, cancelToken));
+          final amityUploadInfo = AmityUploadInfo({
+            'progress': ((progress / total) * 100).toInt(),
+            'contentLength': total
+          });
+          controller
+              .add(AmityUploadResult.progress(amityUploadInfo, cancelToken));
         },
         cancelToken: cancelToken,
       ).then((value) async {
@@ -136,7 +150,8 @@ class FileRepoImpl extends FileRepo {
           return;
         }
         final fileProperties = await _saveDataToDb(value);
-        controller.add(AmityUploadResult<AmityImage>.complete(AmityImage(fileProperties.first)));
+        controller.add(AmityUploadResult<AmityImage>.complete(
+            AmityImage(fileProperties.first)));
       }).onError<AmityException>((error, stackTrace) {
         if (error.code == 499) {
           controller.add(AmityUploadResult.cancel());
