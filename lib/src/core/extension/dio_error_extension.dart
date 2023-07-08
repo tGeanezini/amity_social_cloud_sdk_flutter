@@ -3,7 +3,7 @@ import 'package:amity_sdk/src/data/data.dart';
 import 'package:dio/dio.dart';
 
 /// dio error extention
-extension DioErrorExtension on DioException {
+extension DioExceptionExtension on DioException {
   AmityException toAmityException() {
     switch (type) {
       case DioExceptionType.connectionTimeout:
