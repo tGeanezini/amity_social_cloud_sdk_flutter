@@ -1,3 +1,15 @@
+## 0.25.0
+* fix: Get Post by ID not working
+
+## 0.24.0
+* fix: DataType Filter is now working on user and community feeds
+
+
+## 0.23.0
+* fix: Member can be removed from community and live channel
+* fix: iOS can not receive notifications
+* feat: Updated Dio to version 5
+
 ## 0.21.0
 * feat: Added create comment with Image
 * feat: Added query comment with Image
