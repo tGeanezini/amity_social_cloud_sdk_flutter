@@ -19,11 +19,12 @@ class FileRepoImpl extends FileRepo {
 
   @override
   Future<AmityFileProperties> getFileByIdFromDb(String fileId) {
-    return Future.value(
-      (fileDbAdapter.getFileEntity(fileId)?.convertToAmityFileProperties()!=null)?
-      fileDbAdapter.getFileEntity(fileId)?.convertToAmityFileProperties()
-      : AmityFileProperties()
-      );
+    return Future.value((fileDbAdapter
+                .getFileEntity(fileId)
+                ?.convertToAmityFileProperties() !=
+            null)
+        ? fileDbAdapter.getFileEntity(fileId)?.convertToAmityFileProperties()
+        : AmityFileProperties());
   }
 
   @override
@@ -175,7 +176,8 @@ class FileRepoImpl extends FileRepo {
   }
 
   @override
-  StreamController<AmityUploadResult<AmityVideo>> uploadVideoStream(UploadFileRequest request) {
+  StreamController<AmityUploadResult<AmityVideo>> uploadVideoStream(
+      UploadFileRequest request) {
     final controller = StreamController<AmityUploadResult<AmityVideo>>();
     final cancelToken = CancelToken();
 
@@ -183,9 +185,12 @@ class FileRepoImpl extends FileRepo {
       fileApiInterface.uploadVideo(
         request,
         onUploadProgress: (int progress, int total) {
-          final amityUploadInfo =
-              AmityUploadInfo({'progress': ((progress / total) * 100).toInt(), 'contentLength': total});
-          controller.add(AmityUploadResult.progress(amityUploadInfo, cancelToken));
+          final amityUploadInfo = AmityUploadInfo({
+            'progress': ((progress / total) * 100).toInt(),
+            'contentLength': total
+          });
+          controller
+              .add(AmityUploadResult.progress(amityUploadInfo, cancelToken));
         },
         cancelToken: cancelToken,
       ).then((value) async {
@@ -195,7 +200,8 @@ class FileRepoImpl extends FileRepo {
           return;
         }
         final fileProperties = await _saveDataToDb(value);
-        controller.add(AmityUploadResult<AmityVideo>.complete(AmityVideo(fileProperties.first)));
+        controller.add(AmityUploadResult<AmityVideo>.complete(
+            AmityVideo(fileProperties.first)));
       }).onError<AmityException>((error, stackTrace) {
         if (error.code == 499) {
           controller.add(AmityUploadResult.cancel());
