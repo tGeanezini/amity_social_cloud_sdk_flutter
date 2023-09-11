@@ -1,3 +1,11 @@
+## 0.27.0
+* Feat: Added comminity user rolers in comments
+* Fix: Now video upload give back the upload progress
+
+
+## 0.26.0
+* fix: File is now optional so in case if file for a post is deleted it will return nulll instead of crashing
+
 ## 0.25.0
 * fix: Get Post by ID not working
 

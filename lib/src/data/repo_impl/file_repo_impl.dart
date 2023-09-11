@@ -20,7 +20,10 @@ class FileRepoImpl extends FileRepo {
   @override
   Future<AmityFileProperties> getFileByIdFromDb(String fileId) {
     return Future.value(
-        fileDbAdapter.getFileEntity(fileId)?.convertToAmityFileProperties());
+      (fileDbAdapter.getFileEntity(fileId)?.convertToAmityFileProperties()!=null)?
+      fileDbAdapter.getFileEntity(fileId)?.convertToAmityFileProperties()
+      : AmityFileProperties()
+      );
   }
 
   @override
@@ -169,5 +172,41 @@ class FileRepoImpl extends FileRepo {
   @override
   void cancelUpload(String uploadId) {
     fileApiInterface.cancelUpload(uploadId);
+  }
+
+  @override
+  StreamController<AmityUploadResult<AmityVideo>> uploadVideoStream(UploadFileRequest request) {
+    final controller = StreamController<AmityUploadResult<AmityVideo>>();
+    final cancelToken = CancelToken();
+
+    try {
+      fileApiInterface.uploadVideo(
+        request,
+        onUploadProgress: (int progress, int total) {
+          final amityUploadInfo =
+              AmityUploadInfo({'progress': ((progress / total) * 100).toInt(), 'contentLength': total});
+          controller.add(AmityUploadResult.progress(amityUploadInfo, cancelToken));
+        },
+        cancelToken: cancelToken,
+      ).then((value) async {
+        if (cancelToken.isCancelled) {
+          //Request Cancelled
+          controller.add(AmityUploadResult.cancel());
+          return;
+        }
+        final fileProperties = await _saveDataToDb(value);
+        controller.add(AmityUploadResult<AmityVideo>.complete(AmityVideo(fileProperties.first)));
+      }).onError<AmityException>((error, stackTrace) {
+        if (error.code == 499) {
+          controller.add(AmityUploadResult.cancel());
+        } else {
+          controller.add(AmityUploadResult.error(error));
+        }
+      });
+    } catch (error) {
+      controller.add(AmityUploadResult.error(error as AmityException));
+    }
+
+    return controller;
   }
 }
