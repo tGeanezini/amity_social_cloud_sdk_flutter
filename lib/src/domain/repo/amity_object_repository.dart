@@ -5,7 +5,8 @@ import 'package:amity_sdk/src/core/error/entity_not_found_exception.dart';
 import 'package:amity_sdk/src/core/utils/model_mapper.dart';
 import 'package:amity_sdk/src/data/data_source/data_source.dart';
 
-abstract class AmityObjectRepository<Entity extends EkoObject, PublicModel> {
+abstract mixin class AmityObjectRepository<Entity extends EkoObject,
+    PublicModel> {
   static const DEFAULT_PAGE_SIZE = 20;
 
   Future<PublicModel?> fetchAndSave(String objectId);
@@ -60,7 +61,8 @@ abstract class AmityObjectRepository<Entity extends EkoObject, PublicModel> {
         }
       }
     } catch (error) {
-      if (error.toString() == EntityExpiredException().message || error == EntityNotFoundException().message) {
+      if (error.toString() == EntityExpiredException().message ||
+          error == EntityNotFoundException().message) {
         fetchAndSave(objectId).then((value) {
           getEntity(objectId);
         }).onError((error, stackTrace) {
